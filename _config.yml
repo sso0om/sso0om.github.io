@@ -1,0 +1,122 @@
+theme: jekyll-theme-chirpy
+lang: en
+timezone: Asia/Seoul
+
+title: sso0om's Blog
+tagline: Tech Blog
+description:
+
+url: "https://sso0om.github.io"
+github:
+  username: sso0om
+social:
+  name: sso0om
+  email: ssooom142@gmail.com
+  links:
+    - https://github.com/sso0om
+
+webmaster_verifications:
+  google:
+
+analytics:
+  google:
+    id:
+  goatcounter:
+    id:
+
+pageviews:
+  provider:
+
+theme_mode: light
+cdn:
+avatar:
+social_preview_image:
+
+toc: true
+
+comments:
+  provider:
+  giscus:
+    repo:
+    repo_id:
+    category:
+    category_id:
+    mapping:
+    strict:
+    input_position:
+    lang:
+    reactions_enabled:
+
+pwa:
+  enabled: true
+  cache:
+    enabled: true
+
+paginate: 10
+baseurl: ""
+
+
+# ===== 테마 동작에 필요한 설정. 수정 권장하지 않음 =====
+
+kramdown:
+  footnote_backlink: "&#8617;&#xfe0e;"
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+collections:
+  tabs:
+    output: true
+    sort_by: order
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      comments: true
+      toc: true
+      permalink: /posts/:title/
+  - scope:
+      path: _drafts
+    values:
+      comments: false
+  - scope:
+      path: ""
+      type: tabs
+    values:
+      layout: page
+      permalink: /:title/
+
+sass:
+  style: compressed
+
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  profile: false
+  blanklines: false
+  ignore:
+    envs: [development]
+
+exclude:
+  - "*.gem"
+  - "*.gemspec"
+  - README.md
+  - LICENSE
+
+jekyll-archives:
+  enabled: [categories, tags]
+  layouts:
+    category: category
+    tag: tag
+  permalinks:
+    tag: /tags/:name/
+    category: /categories/:name/
