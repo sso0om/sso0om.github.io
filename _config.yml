@@ -29,7 +29,7 @@ pageviews:
 
 theme_mode: light
 cdn:
-avatar:
+avatar: /assets/img/profile/profile.jpg
 social_preview_image:
 
 toc: true

@@ -1,0 +1,7 @@
+{
+  // Jekyll front matter(---)와 Liquid 문법 때문에
+  // VS Code 내장 검사기가 오탐하므로 비활성화
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false
+}

@@ -1,0 +1,116 @@
+---
+---
+
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+/* ===== 커스텀 컬러 (navy monochrome) ===== */
+
+:root[data-bs-theme='light'] {
+  /* 기본 */
+  --link-color: #14487f;
+  --link-underline-color: #cbdff5;
+  --heading-color: #1a1f28;
+  --text-color: #383e49;
+  --text-muted-color: #6a7280;
+  --label-color: #49505c;
+  --main-border-color: #e4e9f0;
+
+  /* 인용구 */
+  --blockquote-border-color: #cbdff5;
+  --blockquote-text-color: #6a7280;
+
+  /* 사이드바 — 진한 남색 배경 */
+  --sidebar-bg: #0b2f57;
+  --sidebar-border-color: #0b2f57;
+  --sidebar-muted-color: #b3cbe6;
+  --sidebar-active-color: #ffffff;
+  --sidebar-hover-bg: rgb(255 255 255 / 10%);
+  --sidebar-btn-bg: rgb(255 255 255 / 12%);
+  --sidebar-btn-color: #cbdff5;
+  --site-title-color: #ffffff;
+  --site-subtitle-color: #a3c8ee;
+  --avatar-border-color: rgb(255 255 255 / 25%);
+
+  /* 상단바 */
+  --topbar-text-color: #383e49;
+  --search-border-color: #e4e9f0;
+  --search-icon-color: #a8b2c1;
+  --input-focus-border-color: #14487f;
+
+  /* 홈 · 글 */
+  --post-list-text-color: #4a515e;
+  --btn-patinator-text-color: #49505c;
+  --toc-highlight: #14487f;
+  --card-bg: #ffffff;
+  --card-hover-bg: #eef3fa;
+  --tb-border-color: #e4e9f0;
+  --tb-odd-bg: #f7f9fc;
+
+  /* 태그 */
+  --tag-border: #dde2ea;
+  --tag-hover: #cbdff5;
+  --search-tag-bg: #f4f7fb;
+
+  /* 카테고리 */
+  --categories-border: rgb(20 72 127 / 12%);
+  --categories-hover-bg: #e8f0fa;
+  --categories-icon-hover-color: #14487f;
+
+  /* 코드 */
+  --highlight-bg-color: #f4f7fb;
+  --inline-code-bg: rgb(20 72 127 / 7%);
+
+  /* 버튼 */
+  --btn-border-color: #e4e9f0;
+  --btn-share-hover-color: #14487f;
+  --checkbox-checked-color: #14487f;
+  --btn-backtotop-color: #49505c;
+  --btn-backtotop-border-color: #e4e9f0;
+}
+
+a:hover {
+  color: #1a5a9c;
+}
+
+hr {
+  border-top: 1px solid #dde2ea;
+  opacity: 1;
+}
+
+/* 사이드바 링크 색상 (진한 배경 대비) */
+#sidebar .nav-link {
+  color: #b3cbe6;
+}
+
+#sidebar .nav-item.active .nav-link {
+  color: #ffffff;
+}
+
+#sidebar .sidebar-bottom a {
+  color: #cbdff5;
+}
+
+/* 프로필 사진이 원형 영역을 꽉 채우도록 */
+#avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 구분선 위아래 여백 (본문 1줄 ≈ 1.75rem) */
+main hr {
+  margin-top: 5rem;
+  margin-bottom: 3rem;
+}
