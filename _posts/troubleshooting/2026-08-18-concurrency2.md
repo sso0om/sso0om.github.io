@@ -373,7 +373,7 @@ int reserveStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 ### 결과
 
 - 문제 A. 락의 획득 순서로 인한 데드락 위험
-    - 여러 트랜잭션이 여러 행에 락을 걸 때, **트랜잭션마다 락을 거는 순서가 제각각이면** 교착 상태(데드락)가 발생할 수 있음
+    - 여러 트랜잭션이 여러 행에 락을 걸 때, 트랜잭션마다 락을 거는 순서가 제각각이면 교착 상태(데드락)가 발생할 수 있음
 - 문제 B. FOR UPDATE + JOIN 구조 자체의 문제
     - 여러 테이블을 JOIN한 상태로 `FOR UPDATE`를 걸면, InnoDB는 조인에서 실제로 매칭되는 세 테이블의 행 모두에 락을 걸게 됨
     - 서로 다른 SKU를 서로 다른 사용자가 동시에 주문하려 할 때, 결국 같은 Product row에 락 경합이 생겨 동시성이 떨어짐
@@ -394,7 +394,7 @@ int reserveStock(@Param("id") Long id, @Param("quantity") Integer quantity);
 
 #### RDBMS에서의 데드락
 
-- MySQL InnoDB, PostgreSQL 등 주요 RDBMS는 데드락을 **자동으로 감지**하는 메커니즘(Deadlock Detection)을 갖고 있음
+- MySQL InnoDB, PostgreSQL 등 주요 RDBMS는 데드락을 자동으로 감지하는 메커니즘(Deadlock Detection)을 갖고 있음
 - 감지되면 관련 트랜잭션 중 하나(보통 처리 비용이 더 적은 쪽)를 DB 엔진이 강제로 롤백시키고, 해당 트랜잭션에 에러를 반환함
 - MySQL의 경우 아래와 같은 에러가 발생
     
@@ -451,7 +451,7 @@ B는 A가 SKU 202를 놓아주길 기다림
 
 #### 데드락 회피 필요한 이유
 
-- 여러 트랜잭션이 여러 행에 락을 걸 때, **트랜잭션마다 락을 거는 순서가 제각각이면** 교착 상태(데드락)가 발생할 수 있음
+- 여러 트랜잭션이 여러 행에 락을 걸 때, 트랜잭션마다 락을 거는 순서가 제각각이면 교착 상태(데드락)가 발생할 수 있음
 - 한 사용자가 카트에 서로 다른 SKU 여러 개를 담아 한 번에 주문할 수 있고, 
 그 주문 처리 로직(`createOrderItem`)이 각 SKU에 대해 순차적으로 `FOR UPDATE` 락을 걸게 됨
 - 데드락이 자주 발생할지는 트래픽 패턴(동시 접속자 수, 동일 SKU 동시 주문 빈도)에 달려 있음
@@ -459,7 +459,7 @@ B는 A가 SKU 202를 놓아주길 기다림
 #### 락 순서 정렬 (Lock Ordering)
 
 - 데드락을 예방하는 방법
-- **모든 트랜잭션이 자원에 대해 동일한 순서로 락을 요청하도록 강제**
+- 모든 트랜잭션이 자원에 대해 동일한 순서로 락을 요청하도록 강제
 - 순환 대기 조건을 깨는 접근
 - 순환 구조 자체가 성립할 수 없음
 
@@ -498,8 +498,8 @@ SKU 102 락 획득 (성공, 이미 상판 보유 중이므로 순차 진행)
     
     락은 커밋 시점이 아니라 SELECT 실행 시점에 걸림
     
-    1. `setLockMode(LockModeType.PESSIMISTIC_WRITE)`가 붙은 쿼리는 **호출**
-    2. **즉시** DB에 락을 요청하는 SQL을 실행
+    1. `setLockMode(LockModeType.PESSIMISTIC_WRITE)`가 붙은 쿼리는 호출
+    2. 즉시 DB에 락을 요청하는 SQL을 실행
     
     ```java
     @Override
