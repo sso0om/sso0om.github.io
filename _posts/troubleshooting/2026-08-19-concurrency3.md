@@ -16,6 +16,7 @@ mermaid: true
 2편에서 fetch join 조회에 FOR UPDATE를 걸고, SKU id 오름차순 정렬로 데드락(문제 A)을 피했다고 봤다. 하지만 그건 정렬된 결과 순서를 확인한 것이지, 실제로 락이 그 순서대로 걸리는지를 확인한 건 아니었다.   
 남은 건 두 가지다. 이 정렬이 정말 락 순서에 관여하는지(문제 A), 그리고 조인된 products까지 락이 번지는지(문제 B).  
 [2편 - 문제 A. 락의 획득 순서로 인한 데드락 위험]({% link _posts/troubleshooting/2026-08-18-concurrency2.md %})
+[3-2편 - 문제 B. FOR UPDATE + JOIN 구조 자체의 문제]({% link _posts/troubleshooting/2026-08-20-concurrency3.md %})
 
 
 ### 이 글에서 다루는 것
