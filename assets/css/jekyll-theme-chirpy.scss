@@ -18,6 +18,8 @@
 
 :root[data-bs-theme='light'] {
   /* 기본 */
+  --main-bg: #ffffff;
+  --topbar-bg: rgb(255 255 255 / 70%);
   --link-color: #14487f;
   --link-underline-color: #cbdff5;
   --heading-color: #1a1f28;
@@ -52,8 +54,9 @@
   --post-list-text-color: #4a515e;
   --btn-patinator-text-color: #49505c;
   --toc-highlight: #14487f;
-  --card-bg: #ffffff;
-  --card-hover-bg: #eef3fa;
+  --card-bg: #f7f9fb;
+  --card-shadow: rgb(20 72 127 / 5%) 0 2px 6px 0, rgb(20 72 127 / 10%) 0 0 0 1px;
+  --card-hover-bg: #eff3f8;
   --tb-border-color: #e4e9f0;
   --tb-odd-bg: #f7f9fc;
 
@@ -68,8 +71,9 @@
   --categories-icon-hover-color: #14487f;
 
   /* 코드 */
-  --highlight-bg-color: #f4f7fb;
-  --inline-code-bg: rgb(20 72 127 / 7%);
+  --highlight-bg-color: #f2f4f7;
+  --inline-code-bg: rgb(20 72 127 / 9%);
+  --language-border-color: #e0e5ec;
 
   /* 버튼 */
   --btn-border-color: #e4e9f0;
@@ -180,4 +184,22 @@ main details {
   > *:last-child {
     margin-bottom: 1rem;
   }
+}
+
+/* 코드 블록 본문 배경 (rouge 기본값 덮어쓰기) */
+:root[data-bs-theme='light'] {
+  .highlight,
+  .highlight .w {
+    background-color: var(--highlight-bg-color);
+  }
+}
+
+/* 코드 블록 헤더를 본문보다 한 단계 진하게 + 경계선 */
+main div[class^='language-'] > .code-header {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0.75rem;
+  padding-right: 0.25rem;
+  background-color: #e7ebf1;
+  border-bottom: 1px solid var(--language-border-color);
 }
