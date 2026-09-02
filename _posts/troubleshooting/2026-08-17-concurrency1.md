@@ -3,6 +3,7 @@ title: "[주문 동시성 문제 해결기 1] 장바구니 조회 N+1 해결 - f
 date: 2026-08-17 10:00:00 +0900
 categories: [Backend, Troubleshooting]
 tags: [트러블슈팅, JPA, n+1, querydsl]
+mermaid: true
 ---
 
 > 주문 동시성 문제 해결기 (1/7)
@@ -61,6 +62,41 @@ Spring Boot 3.x / JPA(Hibernate) / QueryDSL / MySQL 8.0 (InnoDB, REPEATABLE READ
 ---
 
 ### 기존 코드
+
+### 테이블간 관계
+이 시리즈 전체는 아래 세 갈래 관계 위에서 움직인다. 특히 Product 1 : N ProductSku, 그리고 CartItem이 ProductSku를 참조하는 구조가 이후 N+1·락 확산·데드락 이야기의 핵심이다.
+
+```text
+Category
+  └─ Product (상품)
+       └─ ProductSku (색상·재질별 판매 단위, 재고 보유)   ← 1:N
+Member
+  └─ Cart (회원당 1개, member_id UNIQUE)
+       └─ CartItem (담은 SKU + 수량)   → ProductSku 참조
+```
+
+```mermaid
+erDiagram
+    CATEGORY ||--o{ PRODUCT : "1:N"
+    PRODUCT ||--o{ PRODUCT_SKU : "1:N"
+    MEMBER ||--|| CART : "1:1 (member_id UNIQUE)"
+    CART ||--o{ CART_ITEM : "1:N"
+    PRODUCT_SKU ||--o{ CART_ITEM : "1:N"
+
+    PRODUCT_SKU {
+        long id
+        long product_id
+        int stock_quantity
+        int reserved_quantity
+        string status
+    }
+    CART_ITEM {
+        long id
+        long cart_id
+        long sku_id
+        int quantity
+    }
+```
 
 #### `CartItem` 엔티티
 
