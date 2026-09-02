@@ -551,8 +551,6 @@ Spring Boot 3.x / JPA(Hibernate) / QueryDSL / MySQL 8.0 (InnoDB, REPEATABLE READ
 
 ---
 
----
-
 ## 확인 2. performance_schema
 
 - `performance_schema.data_locks`으로 실제 락 상태 확인
