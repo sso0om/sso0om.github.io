@@ -220,4 +220,4 @@ WHERE ps.product_id = @target_product_id;
 - 검증 타깃은 대량 데이터에 섞지 않고 "검증대상 의자" 한 건 + SKU 4건으로 따로 심었다. 같은 Product에 SKU 여러 개를 두는 이 구성이, 다음 글에서 확인할 Product 행 경합 시나리오의 데이터이다.
 - 마지막에 ANALYZE TABLE로 통계를 갱신하고, EXPLAIN에 넣을 실제 cart_item id·member_id 값을 조회해 뒀다.
    
-다음 글에서는 이 데이터로 EXPLAIN과 performance_schema.data_locks를 돌려, 앞서 남겨둔 문제 A와 문제 B가 실제로 어떻게 나타나는지 확인한다.
+다음 글에서는 이 데이터로 EXPLAIN과 performance_schema.data_locks를 돌려, 앞서 남겨둔 문제 A(락의 획득 순서로 인한 데드락 위험)와 문제 B(FOR UPDATE + JOIN 구조 자체의 문제)가 실제로 어떻게 나타나는지 확인한다.
