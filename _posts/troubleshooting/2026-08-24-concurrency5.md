@@ -13,7 +13,7 @@ tags: [동시성, 트러블슈팅, 멀티스레드, CountDownLatch, ExecutorServ
 ### 시리즈에서 다루는 문제
 
 앞 글에서 `EXPLAIN`과 `performance_schema.data_locks`로 두 가지를 확인했다. 정렬(`orderBy(productSku.id.asc())`)은 조인이 끝난 뒤 적용되는 후처리라 실제 락 순서에 관여하지 못한다는 것(문제 A), 그리고 `FOR UPDATE` + JOIN이 `products` 행까지 잠근다는 것(문제 B)이다. 다만 이건 트랜잭션 하나를 열어두고 관찰한 결과였다.  
-[2편 - 문제 A. 락의 획득 순서로 인한 데드락 위험]({% link _posts/troubleshooting/2026-08-18-concurrency2.md %})
+[2편 - 문제 A. 락의 획득 순서로 인한 데드락 위험]({% link _posts/troubleshooting/2026-08-18-concurrency2.md %})  
 [3-2편 - 문제 B. FOR UPDATE + JOIN 구조 자체의 문제]({% link _posts/troubleshooting/2026-08-20-concurrency4.md %})
 
 ### 이 글에서 다루는 것
