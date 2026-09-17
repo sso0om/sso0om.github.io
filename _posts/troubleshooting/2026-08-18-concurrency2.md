@@ -1,5 +1,5 @@
 ---
-title: "[주문 동시성 문제 해결기 2]  비관적 락 적용, 데드락 회피"
+title: "[주문 동시성 문제 해결기 2] 비관적 락 적용, 데드락 회피"
 date: 2026-08-18 10:00:00 +0900
 categories: [Backend, Troubleshooting]
 tags: [동시성, 트러블슈팅, 트랜잭션, Lock, 데드락]
@@ -99,6 +99,9 @@ Spring Boot 3.x / JPA(Hibernate) / QueryDSL / MySQL 8.0 (InnoDB, REPEATABLE READ
 
 #### 기존 코드
 
+<details markdown="1">
+<summary>기존 코드 전체 보기</summary>
+
 - `CartItem`
     
     ```java
@@ -164,7 +167,39 @@ Spring Boot 3.x / JPA(Hibernate) / QueryDSL / MySQL 8.0 (InnoDB, REPEATABLE READ
         return order.getId();
     }
     ```
-    
+
+- `CartService`
+
+    ```java
+    public List<CartItem> getItemsByIdAndMember(List<Long> itemIds, Long memberId) {
+        List<Long> distinctIds = itemIds.stream().distinct().toList();
+        List<CartItem> cartItems = cartItemRepository.findAllWithSkuForUpdate(distinctIds, memberId);
+            // ...
+    }
+    ```
+
+- `CartItemRepositoryImpl`
+
+    ```java
+    @Override
+    public List<CartItem> findAllWithSkuForUpdate(List<Long> itemIds, Long memberId) {
+        return queryFactory
+            .selectFrom(cartItem)
+            .join(cartItem.productSku, productSku).fetchJoin()
+            .join(productSku.product, product).fetchJoin()
+            .where(
+                cartItem.id.in(itemIds),
+                cartItem.cart.memberId.eq(memberId),
+                productSku.status.ne(SkuStatus.ARCHIVED),
+                product.status.ne(ProductStatus.ARCHIVED)
+            )
+            .orderBy(cartItem.id.asc())
+            .fetch();
+    }
+    ```
+
+</details>   
+   
 
 #### 트랜잭션 격리 수준만으로는 해결이 안 되는 이유
 
@@ -331,6 +366,21 @@ int reserveStock(@Param("id") Long id, @Param("quantity") Integer quantity);
     
 
 ### 조회
+- `OrderFacade`
+    
+    ```java
+    @Transactional
+    public Long createOrder(Long memberId, OrderCreateReqDto reqDto) {
+        List<CartItem> cartItems = cartService.getItemsByIdAndMember(reqDto.cartItems(), memberId);  // FOR UPDATE
+        orderService.validateCartItems(cartItems);          // 재고 검증 (isStockValid)
+    
+        Order order = orderService.createOrder(memberId, reqDto);
+        for(CartItem cartItem : cartItems) {
+            orderService.createOrderItem(cartItem, order);  // reserveQuantity — 재고 선점
+        }
+        // ...
+    }
+    ```
 
 - `CartService`
     
@@ -340,12 +390,6 @@ int reserveStock(@Param("id") Long id, @Param("quantity") Integer quantity);
         List<CartItem> cartItems = cartItemRepository.findAllWithSkuForUpdate(distinctIds, memberId);
         // ...
     }
-    ```
-    
-- `CartItemRepositoryCustom`
-    
-    ```java
-    List<CartItem> findAllWithSkuForUpdate(List<Long> itemIds, Long memberId);
     ```
     
 - `CartItemRepositoryImpl`
@@ -368,7 +412,28 @@ int reserveStock(@Param("id") Long id, @Param("quantity") Integer quantity);
             .fetch();
     }
     ```
-    
+
+### 카트 조회 시점에 락을 거는 이유
+
+- `getItemsByIdAndMember`는 이름은 "카트 조회"지만, 장바구니 화면에 보여주기 위한 조회가 아님
+    - 주문 트랜잭션 안에서 "이제 이 SKU들로 주문하겠다"며 대상 SKU를 락 걸어 가져오는 단계
+    - 직후 `validateCartItems`(재고 검증) → `createOrderItem`(재고 선점)으로 이어짐
+- 즉 락은 "카트를 조회해서"가 아니라 "곧 재고를 검증·선점할 것이라서" 걸림
+    - `findAllWithSkuForUpdate`라는 이름 그대로, 카트 조회 겸 락 획득이 목적
+
+
+#### 락 원칙: 임계 구역 진입 직전, 최대한 늦게
+- 보호 대상: `ProductSku`의 재고 필드
+- 임계 구역: 재고를 읽고(`isStockValid`) → 판단 → 선점(`reserveQuantity`)하는 구간
+- 시점별 문제
+    | 시점 | 문제 |
+    | --- | --- |
+    | 너무 일찍 (예: 장바구니 화면 열 때) | • 사용자가 결제 고민하는 몇 분간 SKU 행이 잠김<br>• 다른 주문 전부 대기<br>• 정작 그 트랜잭션은 금방 끝나 주문 시점엔 락도 풀려 있음 → 처리량만 깎임 |
+    | 너무 늦음 (예: `reserveQuantity` 직전) | • 이미 `validateCartItems`에서 락 없이 `isStockValid`를 읽은 뒤라, 그 사이 Lost Update 창이 열림 |
+- "재고를 읽기 직전 = 카트 아이템을 확정 조회하는 시점"이 정확한 위치
+    - `validateCartItems`(판단)와 `reserveQuantity`(선점)가 같은 인스턴스에 접근
+    - 이 둘이 하나의 락 구간 안에 묶여야 원자적
+
 
 ### 결과
 
